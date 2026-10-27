@@ -83,8 +83,6 @@ li.drag{opacity:.4}
     <div class="top">
       <button class="sw" id="swBtn">My App</button>
       <button class="add" id="installBtn" hidden>⬇ Pasang aplikasi</button>
-      <button class="add" id="addBtn">Tambah file HTML</button>
-      <button class="sw" id="linkBtn">Tambah link</button>
     </div>
   </header>
   <ul id="list"></ul>
@@ -302,7 +300,6 @@ addEventListener('dragleave', e => { if (hasFiles(e) && --depth <= 0) { depth = 
 addEventListener('dragover', e => { if (hasFiles(e)) e.preventDefault(); });
 addEventListener('drop', e => { if (!hasFiles(e)) return; e.preventDefault(); depth = 0; $('#drop').style.display = 'none'; addFiles(e.dataTransfer.files); });
 
-$('#addBtn').onclick = () => $('#file').click();
 $('#file').onchange = e => { addFiles(e.target.files); e.target.value = ''; };
 
 $('#bBack').onclick = back;
@@ -331,8 +328,6 @@ function applySpace() {
   document.documentElement.style.setProperty('--accent', ACCENT[space]);
   $('#logo').src = logoSrc();
   { const sp = space, pr = new Image(); pr.onload = () => { if (space === sp) $('#logo').src = pr.src; }; pr.src = sp === 'cle' ? 'logo.png' : 'logo-my.png'; }
-  $('#addBtn').hidden = space === 'my';
-  $('#linkBtn').hidden = space === 'my';
   $('#menu').hidden = true;
 }
 async function refresh() { games = await loadAll(); applySpace(); render(); }
@@ -354,7 +349,6 @@ async function addLink() {
   games.push(g); await saveMany([g]); render();
 }
 $('#mLink').onclick = () => { $('#menu').hidden = true; addLink(); };
-$('#linkBtn').onclick = addLink;
 /* Pasang ke layar utama (PWA) */
 let inst = null;
 const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
