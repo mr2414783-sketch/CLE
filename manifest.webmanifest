@@ -1,8 +1,8 @@
 {
   "id": "cle-launcher",
-  "name": "cle",
-  "short_name": "cle",
-  "description": "Peluncur aplikasi HTML: tambah file atau link, atur urutan, tampilkan layar penuh.",
+  "name": "My Application",
+  "short_name": "My Application",
+  "description": "Kumpulan aplikasi HTML milikmu: tambah file atau link, atur urutan, tampilkan layar penuh.",
   "start_url": "./index.html",
   "scope": "./",
   "display": "standalone",
