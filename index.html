@@ -384,6 +384,21 @@ addEventListener('appinstalled', () => { $('#installBtn').hidden = true; inst = 
 $('#installBtn').onclick = async () => {
   if (inst) { inst.prompt(); try { await inst.userChoice; } catch (e) {} inst = null; return; }
   const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if (!ios) {
+    const bad = [];
+    try {
+      const r = await fetch('manifest.webmanifest', { cache: 'no-store' });
+      if (!r.ok) bad.push('manifest.webmanifest tidak ditemukan (' + r.status + ')');
+      else {
+        const m = await r.json();
+        for (const ic of (m.icons || [])) { const x = await fetch(ic.src, { cache: 'no-store' }).catch(() => null); if (!x || !x.ok) bad.push(ic.src + ' tidak ditemukan'); }
+      }
+    } catch (e) { bad.push('manifest.webmanifest rusak atau tidak terbaca'); }
+    try { const reg = 'serviceWorker' in navigator && await navigator.serviceWorker.getRegistration(); if (!reg) { const x = await fetch('sw.js', { cache: 'no-store' }).catch(() => null); bad.push(x && x.ok ? 'sw.js ada tapi belum aktif, muat ulang halaman lalu coba lagi' : 'sw.js tidak ditemukan'); } } catch (e) {}
+    if (bad.length) { alert('Belum bisa dipasang karena:\n- ' + [...new Set(bad)].join('\n- ') + '\n\nUpload file yang disebut ke folder yang sama dengan index.html, tunggu 1-2 menit, lalu muat ulang.'); return; }
+    alert('Semua file pemasangan sudah benar, tapi Chrome menganggap aplikasi ini sudah terpasang atau belum siap.\nHapus ikon lama di layar utama, lalu buka menu ⋮ di Chrome dan pilih “Instal aplikasi”.');
+    return;
+  }
   alert(ios
     ? 'Cara pasang di iPhone/iPad:\n1. Buka halaman ini di Safari.\n2. Ketuk tombol Bagikan (kotak dengan panah ke atas).\n3. Pilih “Tambah ke Layar Utama”.'
     : 'Cara pasang:\n1. Buka halaman ini di Chrome (lewat alamat https).\n2. Ketuk menu ⋮ di pojok kanan atas.\n3. Pilih “Instal aplikasi” atau “Tambahkan ke layar utama”.');

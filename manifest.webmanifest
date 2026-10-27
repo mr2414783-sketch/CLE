@@ -1,0 +1,32 @@
+{
+  "id": "cle-launcher",
+  "name": "cle",
+  "short_name": "cle",
+  "description": "Peluncur aplikasi HTML: tambah file atau link, atur urutan, tampilkan layar penuh.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#1b2230",
+  "theme_color": "#1b2230",
+  "icons": [
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
