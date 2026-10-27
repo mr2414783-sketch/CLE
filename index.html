@@ -71,7 +71,7 @@ li.drag{opacity:.4}
 <main>
   <header>
     <div class="brand">
-      <div class="logoWrap"><button class="logo" id="logoBtn" aria-label="Ganti logo"><img id="logo" alt=""></button><span class="badge">📷</span><button id="logoReset" aria-label="Kembalikan logo bawaan" title="Kembalikan logo bawaan" hidden>✕</button></div>
+      <div class="logoWrap"><div class="logo" id="logoBtn"><img id="logo" alt="Logo"></div></div>
       <div><h1 id="title">cle</h1><p class="sub" id="sub"></p></div>
     </div>
     <div class="top">
@@ -85,10 +85,9 @@ li.drag{opacity:.4}
   </header>
   <ul id="list"></ul>
   <div id="empty" hidden><strong>Belum ada file</strong>Klik Tambah file HTML, atau tarik file .html ke halaman ini.</div>
-  <p class="hint">Gunakan tombol ▲ ▼ (atau seret baris) untuk mengubah urutan. Ketuk nama untuk menggantinya. Saat game berjalan, ketuk atau arahkan kursor ke tepi atas layar untuk membuka kontrol. Tombol Kembali di HP dan tombol Esc juga kembali ke daftar. Ketuk logo untuk menggantinya dengan foto, tahan logo untuk mengembalikan logo bawaan.</p>
+  <p class="hint">Gunakan tombol ▲ ▼ (atau seret baris) untuk mengubah urutan. Ketuk nama untuk menggantinya. Saat game berjalan, ketuk atau arahkan kursor ke tepi atas layar untuk membuka kontrol. Tombol Kembali di HP dan tombol Esc juga kembali ke daftar.</p>
 </main>
 <input type="file" id="file" accept=".html,.htm,text/html" multiple hidden>
-<input type="file" id="logoFile" accept="image/*" hidden>
 <div id="drop">Lepas file HTML di sini</div>
 <div id="stage"><iframe id="frame" title="Tampilan" allow="fullscreen; autoplay; microphone; camera; gamepad; clipboard-write" sandbox="allow-scripts allow-same-origin allow-forms allow-modals allow-popups allow-pointer-lock allow-downloads"></iframe></div>
 <div id="trigger" hidden></div>
@@ -320,7 +319,7 @@ function defLogo() {
   const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><rect width="100" height="100" fill="#242d3f"/><rect x="10" y="10" width="80" height="80" rx="18" fill="none" stroke="${c}" stroke-width="4"/><text x="50" y="62" font-family="Georgia,serif" font-weight="700" font-size="${t.length > 2 ? 30 : 38}" fill="${c}" text-anchor="middle">${t}</text></svg>`;
   return 'data:image/svg+xml,' + encodeURIComponent(svg);
 }
-function logoSrc() { try { return localStorage.getItem('cle_logo_' + space) || defLogo(); } catch (e) { return defLogo(); } }
+function logoSrc() { return defLogo(); }
 function applySpace() {
   document.title = NAMES[space];
   $('#title').textContent = NAMES[space];
@@ -328,8 +327,7 @@ function applySpace() {
   $('#swBtn').textContent = space === 'cle' ? 'My App' : 'Kembali ke cle';
   document.documentElement.style.setProperty('--accent', ACCENT[space]);
   $('#logo').src = logoSrc();
-  try { if (!localStorage.getItem('cle_logo_' + space)) { const sp = space, pr = new Image(); pr.onload = () => { if (space === sp && !localStorage.getItem('cle_logo_' + sp)) $('#logo').src = pr.src; }; pr.src = sp === 'cle' ? 'logo.png' : 'logo-my.png'; } } catch (e) {}
-  try { $('#logoReset').hidden = !localStorage.getItem('cle_logo_' + space); } catch (e) {}
+  { const sp = space, pr = new Image(); pr.onload = () => { if (space === sp) $('#logo').src = pr.src; }; pr.src = sp === 'cle' ? 'logo.png' : 'logo-my.png'; }
   $('#addBtn').hidden = space === 'my';
   $('#linkBtn').hidden = space === 'my';
   $('#plusBtn').hidden = space !== 'my';
@@ -355,26 +353,6 @@ async function addLink() {
 }
 $('#mLink').onclick = () => { $('#menu').hidden = true; addLink(); };
 $('#linkBtn').onclick = addLink;
-$('#logoReset').onclick = () => { if (confirm('Kembalikan logo ke bawaan?')) { try { localStorage.removeItem('cle_logo_' + space); } catch (x) {} applySpace(); } };
-$('#logoBtn').onclick = () => $('#logoFile').click();
-$('#logoBtn').oncontextmenu = e => {
-  e.preventDefault();
-  if (confirm('Kembalikan logo ke bawaan?')) { try { localStorage.removeItem('cle_logo_' + space); } catch (x) {} applySpace(); }
-};
-$('#logoFile').onchange = e => {
-  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
-  const img = new Image(), u = URL.createObjectURL(f);
-  img.onload = () => {
-    const S = 256, c = document.createElement('canvas'); c.width = c.height = S;
-    const k = Math.max(S / img.width, S / img.height), w = img.width * k, h = img.height * k;
-    c.getContext('2d').drawImage(img, (S - w) / 2, (S - h) / 2, w, h);
-    try { localStorage.setItem('cle_logo_' + space, c.toDataURL('image/jpeg', 0.9)); } catch (x) { alert('Logo tidak bisa disimpan.'); }
-    URL.revokeObjectURL(u); applySpace();
-  };
-  img.onerror = () => alert('File gambar tidak bisa dibaca.');
-  img.src = u;
-};
-
 /* Pasang ke layar utama (PWA) */
 let inst = null;
 const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
