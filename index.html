@@ -76,6 +76,7 @@ li.drag{opacity:.4}
     </div>
     <div class="top">
       <button class="sw" id="swBtn">My App</button>
+      <button class="add" id="installBtn" hidden>⬇ Pasang aplikasi</button>
       <button class="add" id="addBtn">Tambah file HTML</button>
       <button class="sw" id="linkBtn">Tambah link</button>
       <button class="plus" id="plusBtn" aria-label="Tambah" hidden>+</button>
@@ -372,6 +373,20 @@ $('#logoFile').onchange = e => {
   };
   img.onerror = () => alert('File gambar tidak bisa dibaca.');
   img.src = u;
+};
+
+/* Pasang ke layar utama (PWA) */
+let inst = null;
+const standalone = () => matchMedia('(display-mode: standalone)').matches || navigator.standalone === true;
+if (!standalone()) $('#installBtn').hidden = false;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); inst = e; });
+addEventListener('appinstalled', () => { $('#installBtn').hidden = true; inst = null; });
+$('#installBtn').onclick = async () => {
+  if (inst) { inst.prompt(); try { await inst.userChoice; } catch (e) {} inst = null; return; }
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  alert(ios
+    ? 'Cara pasang di iPhone/iPad:\n1. Buka halaman ini di Safari.\n2. Ketuk tombol Bagikan (kotak dengan panah ke atas).\n3. Pilih “Tambah ke Layar Utama”.'
+    : 'Cara pasang:\n1. Buka halaman ini di Chrome (lewat alamat https).\n2. Ketuk menu ⋮ di pojok kanan atas.\n3. Pilih “Instal aplikasi” atau “Tambahkan ke layar utama”.');
 };
 
 (async () => {
