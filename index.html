@@ -73,6 +73,7 @@ li.drag{opacity:.4}
     <div class="top">
       <button class="sw" id="swBtn">My App</button>
       <button class="add" id="addBtn">Tambah file HTML</button>
+      <button class="sw" id="linkBtn">Tambah link</button>
       <button class="plus" id="plusBtn" aria-label="Tambah" hidden>+</button>
       <div id="menu" hidden><button id="mFile">📄 Tambah file HTML</button><button id="mLink">🔗 Tambah link</button></div>
     </div>
@@ -306,6 +307,7 @@ function applySpace() {
   document.documentElement.style.setProperty('--accent', ACCENT[space]);
   $('#logo').src = logoSrc();
   $('#addBtn').hidden = space === 'my';
+  $('#linkBtn').hidden = space === 'my';
   $('#plusBtn').hidden = space !== 'my';
   $('#menu').hidden = true;
 }
@@ -319,15 +321,16 @@ $('#swBtn').onclick = async () => {
 $('#plusBtn').onclick = e => { e.stopPropagation(); $('#menu').hidden = !$('#menu').hidden; };
 addEventListener('click', e => { if (!e.target.closest('#menu')) $('#menu').hidden = true; });
 $('#mFile').onclick = () => { $('#menu').hidden = true; $('#file').click(); };
-$('#mLink').onclick = async () => {
-  $('#menu').hidden = true;
+async function addLink() {
   let u = prompt('Tempel link aplikasi (contoh: https://situsku.com):'); if (!u || !u.trim()) return;
   u = u.trim(); if (!/^https?:\/\//i.test(u)) u = 'https://' + u;
   let host; try { host = new URL(u).hostname; } catch (x) { alert('Link tidak valid.'); return; }
   const title = (prompt('Nama aplikasi:', host) || host).trim() || host;
   const g = { id: Date.now() + '-' + Math.random().toString(36).slice(2, 8), title, html: '', url: u, order: games.length ? Math.max(...games.map(x => x.order)) + 1 : 0, space, color: null };
   games.push(g); await saveMany([g]); render();
-};
+}
+$('#mLink').onclick = () => { $('#menu').hidden = true; addLink(); };
+$('#linkBtn').onclick = addLink;
 $('#logoBtn').onclick = () => $('#logoFile').click();
 $('#logoBtn').oncontextmenu = e => {
   e.preventDefault();
